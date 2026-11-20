@@ -1,0 +1,65 @@
+{
+  "title": "Storefront Search Bar",
+  "heading": "Top bar search: design review",
+  "owner": "Sam Patel",
+  "ticket": "SHOP-42",
+  "eyebrow": ["Larkspur Goods storefront", "SHOP-42", "Sprint 14 review"],
+  "lede": "These are screenshots of the new search box in the storefront's top bar: what shoppers see before they type, the results as they type, and what happens when nothing matches or search fails. Pin a comment on anything you would change. Each comment is saved with your name, under the section it belongs to.",
+  "facts": [
+    ["Mock data", "Every product, order and price is made up, and so is the shop. This is an example page for the design-review-page skill."],
+    ["Desktop", "Captured in Edge, 1440 pixels wide."],
+    ["Design", "Judged against the search design brief. Deliberate differences are listed under each section."]
+  ],
+  "sections": [
+    {
+      "key": "box",
+      "name": "The search box",
+      "lead": "One box in the top bar finds products, past orders and help articles, so shoppers no longer have to know which page to start from.",
+      "asks": [
+        ["Order of the groups.", "Results are grouped as Products, then Orders, then Help articles. Keep this order, or tell us the one you want.", ["02-results"]],
+        ["Shortcut hint.", "The box shows \"Ctrl K\" as a hint. The design brief doesn't mention a shortcut; we added it because returning shoppers search often. Keep it, or remove it?", ["01-home"]]
+      ],
+      "figures": [
+        {
+          "id": "01-home",
+          "src": "shots/01-home.png",
+          "title": "Search box in the top bar",
+          "alt": "The storefront home page with a search box in the top bar, outlined in red, reading Search products, orders and help, with a Ctrl K hint at its right end.",
+          "caption": "The box sits in the top bar on every page. Its placeholder says what it can find, and the hint on the right says shoppers can jump to it with Ctrl K."
+        },
+        {
+          "id": "02-results",
+          "src": "shots/02-results.png",
+          "title": "Results for \"linen\"",
+          "alt": "The search dropdown for the word linen, with groups for Products (7), Orders (2) and Help articles (1); each product row has a colour swatch and a price.",
+          "caption": "Results appear as the shopper types, grouped by what they are. Each group shows up to four rows and how many matched, with a link to see them all. The matching words are highlighted."
+        }
+      ],
+      "diffs": [
+        ["Recent searches.", "The design shows the shopper's last three searches when the box is empty. Not built yet; it needs the account service, and is planned as a follow-up."]
+      ]
+    },
+    {
+      "key": "states",
+      "name": "No match and failure",
+      "lead": "What shoppers see when nothing matches, and when search itself isn't working.",
+      "figures": [
+        {
+          "id": "03-no-match",
+          "src": "shots/03-no-match.png",
+          "title": "Nothing matches",
+          "alt": "The search dropdown reading No results for zzqx, with a hint to check the spelling or search for a product name, order number or help topic.",
+          "caption": "When nothing matches, the dropdown repeats the search and suggests what shoppers can search for, instead of an empty box."
+        },
+        {
+          "id": "04-failure",
+          "src": "shots/04-failure.png",
+          "title": "Search fails",
+          "alt": "The search dropdown reading Search isn't working right now, with a line asking the shopper to check their connection and a Try again button.",
+          "caption": "If search can't finish, shoppers are told plainly and can try again without retyping. The failure was forced in the browser for this screenshot, because the mock data never fails."
+        }
+      ]
+    }
+  ],
+  "general": { "name": "General feedback", "lead": "Anything that covers more than one screen: the overall look, the wording, or something you expected to see that's missing." }
+}

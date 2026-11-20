@@ -1,0 +1,1192 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a review desk. A sticky ticket rail on the left, the screens in one reading column, and each screen's pins and thread directly beneath it. */
+:root {
+  --bg: #f3f4f1;
+  --surface: #ffffff;
+  --sunken: #ebede8;
+  --ink: #1a1f24;
+  --muted: #59626b;
+  --line: #d9ddd6;
+  --accent: #1c3a5b;
+  --accent-ink: #ffffff;
+  --accent-soft: #e2eaf3;
+  --pin: #6b3fd0;
+  --pin-ink: #ffffff;
+  --pin-soft: #ece6fb;
+  --warn: #8a5a00;
+  --warn-solid: #e3a514;
+  --warn-soft: #fdf3d6;
+  --danger: #b3261e;
+  --danger-solid: #d33a2f;
+  --danger-soft: #fbe5e3;
+  --ok: #2c7339;
+  --ok-solid: #2f9a45;
+  --ok-soft: #e2f1e4;
+  --shot-bg: #ffffff;
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.125rem;
+  --step-2: 1.5rem;
+  --step-3: 2.25rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111417; --surface: #1a1e23; --sunken: #22272d; --ink: #e6e9ec; --muted: #9ba5ae; --line: #2e353c;
+    --accent: #9cbde3; --accent-ink: #0f1c2b; --accent-soft: #1f2d3d; --pin: #b49cff; --pin-ink: #1a0f33; --pin-soft: #2a2140;
+    --warn: #f2c14e; --warn-solid: #e3a514; --warn-soft: #3a2f12; --danger: #ff8a80; --danger-solid: #e5534b; --danger-soft: #3a1a19;
+    --ok: #7fc98c; --ok-solid: #3fae57; --ok-soft: #1a2e1f; --shot-bg: #ffffff; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111417; --surface: #1a1e23; --sunken: #22272d; --ink: #e6e9ec; --muted: #9ba5ae; --line: #2e353c;
+  --accent: #9cbde3; --accent-ink: #0f1c2b; --accent-soft: #1f2d3d; --pin: #b49cff; --pin-ink: #1a0f33; --pin-soft: #2a2140;
+  --warn: #f2c14e; --warn-solid: #e3a514; --warn-soft: #3a2f12; --danger: #ff8a80; --danger-solid: #e5534b; --danger-soft: #3a1a19;
+  --ok: #7fc98c; --ok-solid: #3fae57; --ok-soft: #1a2e1f; --shot-bg: #ffffff; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: var(--step-0); line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+
+.page { max-width: 1240px; margin: 0 auto; display: grid; gap: 32px; }
+@media (min-width: 980px) {
+  .page { grid-template-columns: 232px minmax(0, 1fr); align-items: start; }
+}
+
+/* Rail */
+.rail { display: grid; gap: 18px; min-width: 0; }
+@media (min-width: 980px) {
+  .rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); }
+}
+.rail-label { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+.rail nav ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 2px; }
+@media (max-width: 979px) {
+  .rail nav ul { display: flex; flex-wrap: wrap; gap: 6px; }
+}
+.rail nav a {
+  display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px;
+  text-decoration: none; color: var(--ink); font-weight: 600; font-size: var(--step--1);
+}
+@media (max-width: 979px) { .rail nav a { border: 1px solid var(--line); background: var(--surface); } }
+.rail nav a:hover { background: var(--sunken); }
+.rail nav .k { font-family: var(--font-mono); font-weight: 500; color: var(--muted); font-size: 0.75rem; }
+.rail nav .n { flex: 1; min-width: 0; }
+.count {
+  min-width: 22px; height: 20px; padding: 0 6px; border-radius: 10px; display: inline-grid; place-items: center;
+  font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; background: var(--pin-soft); color: var(--pin);
+}
+.count.is-zero { background: var(--sunken); color: var(--muted); }
+.toggle { display: flex; align-items: center; gap: 8px; font-size: var(--step--1); color: var(--muted); cursor: pointer; }
+.toggle input { accent-color: var(--accent); width: 16px; height: 16px; }
+.me { display: flex; align-items: center; gap: 10px; font-size: var(--step--1); color: var(--muted); min-width: 0; }
+.me img { width: 26px; height: 26px; border-radius: 50%; flex: none; }
+.me strong { color: var(--ink); font-weight: 600; }
+.legend { display: grid; gap: 6px; font-size: 0.75rem; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 8px; }
+.legend i { width: 12px; height: 12px; border-radius: 50% 50% 50% 2px; flex: none; }
+.legend .lg-open { background: var(--pin); }
+.legend .lg-reopened { background: var(--danger-solid); }
+.legend .lg-resolved { background: var(--ok-solid); }
+
+/* Header */
+.intro { display: grid; gap: 18px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: var(--step--1); color: var(--muted); }
+.eyebrow .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--line); }
+h1 { font-size: var(--step-3); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
+.intro .lede { font-size: var(--step-1); max-width: 62ch; color: var(--ink); }
+.how { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.how-steps { margin: 0; padding: 16px 18px 16px 38px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 8px; align-content: start; }
+.how-steps li::marker { font-family: var(--font-mono); color: var(--pin); font-weight: 500; }
+.facts { margin: 0; display: grid; gap: 8px; font-size: var(--step--1); color: var(--muted); align-content: start; }
+.facts div { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; }
+.facts dt { font-weight: 700; color: var(--ink); }
+.facts dd { margin: 0; }
+
+.notice { padding: 12px 14px; border-radius: 10px; font-size: var(--step--1); background: var(--accent-soft); color: var(--ink); border: 1px solid var(--line); }
+.notice.is-warn { background: var(--danger-soft); }
+
+/* View switch */
+.views { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--sunken); border: 1px solid var(--line); }
+.views button { border: 0; background: transparent; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: var(--step--1); color: var(--muted); }
+.views button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+
+main { display: grid; gap: 28px; min-width: 0; }
+
+/* Ticket sections */
+.ticket { display: grid; gap: 26px; padding-block: 34px 10px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.ticket:first-child { border-top: 0; padding-top: 4px; }
+.ticket-head { display: grid; gap: 8px; }
+.ticket-head .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.key { font-family: var(--font-mono); font-size: var(--step--1); font-weight: 500; text-decoration: none; padding: 2px 8px; border-radius: 6px; background: var(--accent-soft); }
+a.key:hover { text-decoration: underline; }
+.state { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+.ticket h2 { font-size: var(--step-2); font-weight: 700; letter-spacing: -0.01em; }
+.ticket .lead { max-width: 66ch; color: var(--muted); }
+
+.figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.shot { position: relative; width: fit-content; max-width: 100%; line-height: 0; }
+.shot img { display: block; max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); background: var(--shot-bg); user-select: none; -webkit-user-drag: none; }
+.can-write .shot { cursor: crosshair; }
+.pins { position: absolute; inset: 0; pointer-events: none; }
+.pin {
+  position: absolute; transform: translate(-50%, -50%); pointer-events: auto;
+  min-width: 28px; height: 28px; padding: 0 5px; border-radius: 50% 50% 50% 4px; display: grid; place-items: center;
+  background: var(--pin); color: var(--pin-ink); border: 2px solid #ffffff; cursor: pointer;
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; line-height: 1;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.28); transition: transform 120ms ease;
+}
+.pin:hover, .pin.is-hot { transform: translate(-50%, -50%) scale(1.18); }
+.pin.st-reopened { background: var(--danger-solid); color: #ffffff; }
+.pin.st-resolved { background: var(--ok-solid); color: #ffffff; }
+.pin.is-draft { background: var(--surface); color: var(--pin); border: 2px dashed var(--pin); pointer-events: none; animation: bob 1.4s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translate(-50%, -62%); } }
+figcaption { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; font-size: var(--step--1); color: var(--muted); max-width: 1000px; }
+figcaption .cap { flex: 1 1 420px; min-width: 0; }
+figcaption .cap b { color: var(--ink); font-weight: 700; }
+.figure .thread { margin-top: 2px; }
+.is-pending { display: inline-block; width: 7.5em; height: 0.95em; border-radius: 4px; background: var(--sunken); color: transparent; overflow: hidden; white-space: nowrap; vertical-align: middle; animation: pending 1.2s ease-in-out infinite alternate; }
+@keyframes pending { to { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) { .is-pending { animation: none; } }
+.link-btn { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 600; font-size: var(--step--1); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn:hover { color: var(--ink); }
+.link-btn.danger { color: var(--danger); }
+.link-btn.ok { color: var(--ok); }
+.write-only { display: none; }
+.can-write .write-only { display: revert; }
+
+.note { font-size: var(--step--1); color: var(--muted); max-width: 70ch; }
+.diffs { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 10px; max-width: 900px; }
+.diffs h3 { font-size: var(--step-0); font-weight: 700; }
+.diffs p { font-size: var(--step--1); color: var(--muted); }
+.diffs ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: var(--step--1); }
+.diffs li strong { font-weight: 700; }
+/* What the reviewers are asked to verify or decide: same card as the differences, marked with the accent edge */
+.asks { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 18px 20px; display: grid; gap: 10px; max-width: 900px; }
+.asks h3 { font-size: var(--step-0); font-weight: 700; }
+.asks > p { font-size: var(--step--1); color: var(--muted); }
+.asks ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; font-size: var(--step--1); }
+.asks li::marker { font-family: var(--font-mono); font-weight: 500; color: var(--accent); }
+.asks li strong { font-weight: 700; }
+.asks .see { color: var(--muted); }
+
+.notes { display: grid; gap: 10px; max-width: 900px; }
+.notes h3 { font-size: var(--step-0); font-weight: 700; }
+.empty { font-size: var(--step--1); color: var(--muted); }
+
+/* Threads */
+.thread { display: grid; gap: 8px; max-width: 900px; }
+.thread:empty { display: none; }
+.cmt { display: grid; gap: 6px; padding: 12px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); scroll-margin-top: 80px; }
+.cmt.st-reopened { border-color: var(--danger-solid); }
+.cmt.st-resolved { border-color: var(--ok-solid); }
+.cmt.is-flash { animation: flash 1.6s ease; }
+@keyframes flash { 0%, 40% { box-shadow: 0 0 0 3px var(--pin); } 100% { box-shadow: 0 0 0 0 transparent; } }
+.cmt-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: var(--step--1); }
+.cmt-head img { width: 22px; height: 22px; border-radius: 50%; }
+.cmt-head .who { font-weight: 700; }
+.cmt-head time { color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; }
+.chip { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; padding: 1px 8px; border-radius: 999px; background: var(--pin-soft); color: var(--pin); white-space: nowrap; }
+.chip.st-reopened { background: var(--danger-soft); color: var(--danger); }
+.chip.st-resolved { background: var(--ok-soft); color: var(--ok); }
+.cmt-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.cmt-body.is-gone { font-style: italic; color: var(--muted); }
+.cmt-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.children { display: grid; gap: 6px; margin-top: 4px; padding-left: 14px; border-left: 2px solid var(--line); }
+.children .cmt { background: var(--sunken); border-color: transparent; padding: 10px 12px; }
+.evt { display: grid; gap: 4px; padding: 9px 12px; border-radius: 8px; font-size: var(--step--1); background: var(--sunken); }
+.evt.k-reopen { background: var(--danger-soft); }
+.evt.k-resolve { background: var(--ok-soft); }
+.evt-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.evt-head img { width: 18px; height: 18px; border-radius: 50%; }
+.evt-head .mark { font-weight: 700; }
+.evt.k-reopen .mark { color: var(--danger); }
+.evt.k-resolve .mark { color: var(--ok); }
+.evt-head time { color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; }
+.evt-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--step-0); }
+.context { font-size: 0.75rem; color: var(--muted); }
+.err { font-size: var(--step--1); color: var(--danger); }
+
+/* Composer */
+.composer { display: grid; gap: 8px; max-width: 900px; padding: 12px; border-radius: 12px; background: var(--surface); border: 2px solid var(--pin); }
+.composer.m-reopen { border-color: var(--danger-solid); }
+.composer.m-resolve, .composer.m-close { border-color: var(--ok-solid); }
+.composer label { font-size: var(--step--1); font-weight: 700; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.composer textarea { width: 100%; min-height: 84px; resize: vertical; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; line-height: 1.5; }
+.composer textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.composer .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.composer .hint { font-size: 0.75rem; color: var(--muted); margin-right: auto; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 7px 14px; border-radius: 8px; font-weight: 600; font-size: var(--step--1); cursor: pointer; }
+.btn:hover { background: var(--sunken); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.1); }
+.btn[disabled] { opacity: 0.55; cursor: default; }
+.ghost-note { width: fit-content; }
+
+/* Screenshots on resolution notes, and links in any comment */
+.cmt-body a, .evt-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.att { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 4px; }
+.att figure { margin: 0; display: grid; gap: 4px; align-content: start; }
+.att-shot { display: block; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--surface); cursor: zoom-in; }
+.att-shot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.att-shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; background: var(--sunken); }
+.att figcaption { font-size: 0.75rem; line-height: 1.35; color: var(--muted); }
+.viewer { width: 96vw; max-width: 1440px; padding: 0; border: 0; border-radius: 12px; background: var(--surface); color: var(--ink); }
+.viewer::backdrop { background: rgb(0 0 0 / 0.6); }
+.viewer-bar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+.viewer-cap { margin: 0 auto 0 0; font-size: var(--step--1); color: var(--muted); }
+.viewer img { display: block; width: 100%; height: auto; }
+
+/* All feedback view */
+.fb-group { display: grid; gap: 10px; padding-block: 22px; border-top: 1px solid var(--line); }
+.fb-group:first-child { border-top: 0; padding-top: 0; }
+.fb-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.fb-head h2 { font-size: var(--step-1); font-weight: 700; }
+.fb-head .tally { font-size: var(--step--1); color: var(--muted); margin-right: auto; }
+.fb-item { display: grid; gap: 4px; max-width: 900px; }
+.copied { font-size: 0.75rem; color: var(--ok); }
+.copy-area { width: 100%; max-width: 900px; min-height: 120px; font-family: var(--font-mono); font-size: 0.75rem; padding: 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pin, .pin.is-draft, .cmt.is-flash { animation: none; transition: none; }
+}
+.eyebrow a { color: var(--accent); font-weight: 600; }
+.diffs li strong { margin-right: 2px; }
+.how-steps { align-self: start; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+.facts dd a, .lede a, .lead a, .cap a, .diffs a, .asks a { color: var(--accent); }
+</style>
+
+<div class="page">
+  <aside class="rail" aria-label="Review navigation">
+    <div>
+      <p class="rail-label">Sections</p>
+      <nav aria-label="Sections"><ul id="rail-list"></ul></nav>
+    </div>
+    <label class="toggle" for="hide-resolved"><input type="checkbox" id="hide-resolved"> Hide resolved comments</label>
+    <div class="legend" aria-label="Pin colours">
+      <span><i class="lg-open"></i>Open</span>
+      <span><i class="lg-reopened"></i>Reopened</span>
+      <span><i class="lg-resolved"></i>Resolved</span>
+    </div>
+    <div class="me" id="me" hidden></div>
+  </aside>
+
+  <main>
+    <header class="intro">
+      <p class="eyebrow" id="eyebrow"></p>
+      <h1 id="heading"></h1>
+      <p class="lede" id="lede"></p>
+      <div class="how">
+        <ol class="how-steps" id="steps"></ol>
+        <dl class="facts" id="facts"></dl>
+      </div>
+      <p class="notice" id="notice" role="status">Loading comments…</p>
+    </header>
+
+    <div class="toolbar">
+      <div class="views" role="group" aria-label="View">
+        <button type="button" id="view-screens" aria-pressed="true">Screens</button>
+        <button type="button" id="view-feedback" aria-pressed="false">All feedback <span class="count is-zero" id="total-count">0</span></button>
+      </div>
+    </div>
+
+    <div id="screens"></div>
+    <div id="feedback" hidden></div>
+  </main>
+</div>
+
+<script type="application/json" id="review-data">__REVIEW_JSON__</script>
+<script>
+// Design review page (skill: design-review-page). The content comes from the review-data block above;
+// the comment system below is the same for every page. Comments are rows in this artifact's own db
+// collection "comments" (never the artifact's native comments, which tag @Claude):
+//   { kind, ticket, section, figure, x, y, parent, body, author, createdAt, resolved, editedAt?, deleted?, images? }
+// kind "comment" is a pin (figure + x/y), a note (no figure) or a reply (parent). kind "accept" (marked
+// resolved) or "reopen" is a resolution event on the top-level comment named by parent; the latest event
+// sets its status. Pages built with earlier versions of this template also wrote "propose" (now read as
+// resolved) and "decline" (read as reopened). Section keys and figure ids are permanent once comments point at them.
+(function () {
+  "use strict";
+
+  const DATA = JSON.parse(document.getElementById("review-data").textContent);
+  // Where ticket keys link: the key is appended to jiraBase. Without one, keys show as plain text.
+  const JIRA = typeof DATA.jiraBase === "string" && /^https?:\/\//.test(DATA.jiraBase) ? DATA.jiraBase : null;
+  // Comment times use review.json's locale ("en-AU", "en-US"), or the viewer's own when it has none.
+  const LOCALE = DATA.locale || undefined;
+  const OWNER = DATA.owner || "the page owner";
+  const SECTIONS = DATA.sections;
+  let figNo = 0;
+  SECTIONS.forEach(s => {
+    s.figures = s.figures || [];
+    s.figures.forEach(f => { f.n = ++figNo; });
+    const f = s.figures;
+    s.range = f.length > 1 ? f[0].n + "-" + f[f.length - 1].n : f.length ? String(f[0].n) : "";
+  });
+  const GENERAL = Object.assign({ key: "general", name: "General feedback", lead: "Anything that covers more than one screen: the overall look, the wording, or something you expected to see that's missing." }, DATA.general || {}, { key: "general" });
+  const SECTION_KEYS = new Set(SECTIONS.map(s => s.key).concat([GENERAL.key]));
+  const FIGURES = new Map();
+  SECTIONS.forEach(s => s.figures.forEach(f => FIGURES.set(f.id, Object.assign({ section: s.key }, f))));
+  const figLabel = id => { const f = FIGURES.get(id); return "Figure " + f.n + ", " + f.title; };
+  const ticketOf = key => { const s = SECTIONS.find(x => x.key === key); return (s && s.ticket) || DATA.ticket || null; };
+
+  const DEFAULT_STEPS = [
+    "Click the spot on a screenshot you want to talk about, or choose **Comment on this screen**.",
+    "Write your comment and post it. One point per comment is easiest to action.",
+    "For anything that isn't about one screen, use the notes at the end of each section, or General feedback at the bottom."
+  ];
+  const RESOLVING = ["Resolving", "Anyone can mark a comment resolved, with a note on what was done (green). If it isn't, anyone can reopen it and say what's still open (red), and the conversation carries on."];
+
+  // Resolution events are rows of their own (kind), children of the comment they act on. "accept" is
+  // written for "marked resolved"; "propose" and "decline" come only from pages built with earlier versions of this template.
+  const KINDS = new Set(["comment", "propose", "accept", "decline", "reopen"]);
+  const STATUS_OF_EVENT = { propose: "resolved", accept: "resolved", decline: "reopened", reopen: "reopened" };
+  const STATUS_LABEL = { open: "Open", reopened: "↺ Reopened", resolved: "✓ Resolved" };
+  const STATUS_ORDER = { reopened: 0, open: 1, resolved: 2 };
+  const RESOLVES = new Set(["propose", "accept"]);
+
+  const MODES = {
+    "new":     { button: "Post", required: true, placeholder: "What would you change, and why?" },
+    "reply":   { label: "Reply", button: "Post reply", required: true, placeholder: "Write a reply" },
+    "edit":    { label: "Edit your comment", button: "Save", required: true, placeholder: "" },
+    "resolve": { label: "Mark this comment resolved", button: "Mark resolved", required: true, placeholder: "What was done, or why is it resolved?" },
+    "close":   { label: "Mark your comment resolved", button: "Mark resolved", required: false, placeholder: "Anything to add? (optional)" },
+    "reopen":  { label: "Reopen this comment", button: "Reopen", required: true, placeholder: "What's still open, or what would you like to ask?" }
+  };
+
+  // ---------- small DOM helpers ----------
+  function el(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    if (attrs) for (const k of Object.keys(attrs)) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === "class") e.className = v;
+      else if (k === "text") e.textContent = v;
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? "" : String(v));
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      e.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+    }
+    return e;
+  }
+  const $ = (s, r) => (r || document).querySelector(s);
+  const reduceMotion = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Text from review-data may carry [label](https://link), `code` and **bold**. Built as DOM, never as HTML.
+  const RICH = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*/g;
+  function rich(text) {
+    const s = String(text || "");
+    const out = [];
+    let last = 0;
+    for (const m of s.matchAll(RICH)) {
+      if (m.index > last) out.push(s.slice(last, m.index));
+      if (m[1] != null) out.push(el("a", { href: m[2], target: "_blank", rel: "noopener", text: m[1] }));
+      else if (m[3] != null) out.push(el("code", { text: m[3] }));
+      else out.push(el("b", { text: m[4] }));
+      last = m.index + m[0].length;
+    }
+    if (last < s.length) out.push(s.slice(last));
+    return out;
+  }
+
+  // ---------- state ----------
+  let db = null, user = null, myId = null, mode = "loading"; // loading | write | read | off
+  let comments = [];
+  let hideResolved = false;
+  let view = "screens";
+  let active = null;          // { mode, section, figure, x, y, cid }
+  let pendingDelete = null;   // comment id awaiting confirmation
+  const profileCache = {};
+  const figEls = {};
+  const sectionEls = {};
+
+  // ---------- derived state ----------
+  function derive() {
+    const tops = [];
+    const children = new Map();
+    for (const c of comments) {
+      if (c.parent) {
+        if (!children.has(c.parent)) children.set(c.parent, []);
+        children.get(c.parent).push(c);
+      } else if (c.kind === "comment") tops.push(c);
+    }
+    const status = {};
+    const pins = {};
+    const perFigure = {};
+    for (const t of tops) {
+      const events = (children.get(t.id) || []).filter(e => e.kind !== "comment");
+      const last = events[events.length - 1];
+      status[t.id] = last ? STATUS_OF_EVENT[last.kind] : (t.legacyResolved ? "resolved" : "open");
+      if (t.figure && t.x != null) {
+        perFigure[t.figure] = (perFigure[t.figure] || 0) + 1;
+        pins[t.id] = perFigure[t.figure];
+      }
+    }
+    const live = t => !t.deleted || (children.get(t.id) || []).some(r => r.kind !== "comment" || !r.deleted);
+    const visible = t => live(t) && !(hideResolved && status[t.id] === "resolved");
+    return { tops: tops, children: children, status: status, pins: pins, live: live, visible: visible };
+  }
+
+  // ---------- static build ----------
+  function buildIntro() {
+    const eb = $("#eyebrow");
+    (DATA.eyebrow || []).forEach((item, i) => {
+      if (i) eb.append(el("span", { class: "dot", "aria-hidden": "true" }));
+      eb.append(el("span", null, rich(item)));
+    });
+    $("#heading").textContent = DATA.heading || "Design review";
+    $("#lede").replaceChildren(...rich(DATA.lede || ""));
+    $("#steps").replaceChildren(...(DATA.steps || DEFAULT_STEPS).map(s => el("li", null, rich(s))));
+    $("#facts").replaceChildren(...[RESOLVING].concat(DATA.facts || []).map(f => el("div", null, el("dt", { text: f[0] }), el("dd", null, rich(f[1])))));
+  }
+
+  function buildRail() {
+    const list = $("#rail-list");
+    for (const s of SECTIONS.concat([GENERAL])) {
+      const k = s.ticket ? s.ticket.replace(/^[A-Z]+-/, "") : s.range;
+      list.append(el("li", null, el("a", { href: "#" + s.key, onclick: () => setView("screens") },
+        k ? el("span", { class: "k", text: k }) : null,
+        el("span", { class: "n", text: s.name }),
+        el("span", { class: "count is-zero", "data-count": s.key, text: "0" }))));
+    }
+  }
+
+  function buildFigure(s, f) {
+    const img = el("img", { src: f.src, alt: f.alt, width: f.width, height: f.height, loading: "lazy", draggable: "false" });
+    const pins = el("div", { class: "pins" });
+    const shot = el("div", { class: "shot" }, img, pins);
+    shot.addEventListener("click", e => {
+      if (e.target.closest(".pin")) return;
+      if (mode !== "write") { flashNotice(); return; }
+      const r = img.getBoundingClientRect();
+      const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      const y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      openComposer({ mode: "new", section: s.key, figure: f.id, x: x, y: y });
+    });
+    const thread = el("div", { class: "thread" });
+    const slot = el("div", { class: "slot", "data-slot": "fig:" + f.id });
+    // Caption above, so the screenshot's comments (and a new pin's composer) start right under the image.
+    const fig = el("figure", { class: "figure", id: "fig-" + f.id },
+      el("figcaption", null,
+        el("span", { class: "cap" }, el("b", { text: "Figure " + f.n + ". " + f.title + ". " }), rich(f.caption)),
+        el("button", { type: "button", class: "link-btn write-only", onclick: () => openComposer({ mode: "new", section: s.key, figure: f.id }) }, "Comment on this screen")),
+      shot,
+      slot, thread);
+    thread.addEventListener("mouseover", e => hotPin(e, true));
+    thread.addEventListener("mouseout", e => hotPin(e, false));
+    figEls[f.id] = { pins: pins, thread: thread };
+    return fig;
+  }
+
+  function buildNotes(key, title) {
+    const thread = el("div", { class: "thread" });
+    const empty = el("p", { class: "empty", text: "No notes yet." });
+    const wrap = el("div", { class: "notes" },
+      el("h3", { text: title }),
+      empty, thread,
+      el("div", { class: "slot", "data-slot": "section:" + key }),
+      el("button", { type: "button", class: "btn ghost-note write-only", onclick: () => openComposer({ mode: "new", section: key, figure: null }) }, "Add a note"));
+    sectionEls[key] = { thread: thread, empty: empty };
+    return wrap;
+  }
+
+  // "(Figures 3 and 6)": links to the figures an item is about, numbered as the page numbers them.
+  function seeFigures(ids) {
+    const figs = (ids || []).filter(id => FIGURES.has(id));
+    if (!figs.length) return null;
+    const parts = [figs.length > 1 ? " (Figures " : " (Figure "];
+    figs.forEach((id, i) => {
+      if (i) parts.push(i === figs.length - 1 ? " and " : ", ");
+      parts.push(el("a", { href: "#fig-" + id, text: String(FIGURES.get(id).n) }));
+    });
+    parts.push(")");
+    return el("span", { class: "see" }, parts);
+  }
+
+  // What the reviewers are asked to verify or decide, at the top of the section, before its screens.
+  function buildAsks(s) {
+    const intro = s.asksIntro || DATA.asksIntro;
+    return el("div", { class: "asks" },
+      el("h3", { text: s.asksTitle || DATA.asksTitle || "Please verify or decide" }),
+      intro ? el("p", null, rich(intro)) : null,
+      el("ol", null, s.asks.map(a => el("li", null, a[0] ? el("strong", { text: a[0] + " " }) : null, rich(a[1]), seeFigures(a[2])))));
+  }
+
+  function buildScreens() {
+    const root = $("#screens");
+    for (const s of SECTIONS) {
+      const sec = el("section", { class: "ticket", id: s.key, "aria-labelledby": "h-" + s.key });
+      const meta = el("p", { class: "meta" });
+      if (s.ticket) meta.append(JIRA
+        ? el("a", { class: "key", href: JIRA + s.ticket, target: "_blank", rel: "noopener", text: s.ticket })
+        : el("span", { class: "key", text: s.ticket }));
+      if (s.state) meta.append(el("span", { class: "state", text: s.state }));
+      else if (!s.ticket && s.range) meta.append(el("span", { class: "state", text: s.figures.length > 1 ? "Figures " + s.range.replace("-", " to ") : "Figure " + s.range }));
+      sec.append(el("header", { class: "ticket-head" }, meta,
+        el("h2", { id: "h-" + s.key, text: s.name }),
+        s.lead ? el("p", { class: "lead" }, rich(s.lead)) : null));
+      if (s.asks && s.asks.length) sec.append(buildAsks(s));
+      s.figures.forEach(f => sec.append(buildFigure(s, f)));
+      if (s.note) sec.append(el("p", { class: "note" }, rich(s.note)));
+      if (s.diffs && s.diffs.length) {
+        sec.append(el("div", { class: "diffs" },
+          el("h3", { text: DATA.diffsTitle || "Built differently from the design on purpose" }),
+          s.diffsIntro ? el("p", null, rich(s.diffsIntro)) : null,
+          el("ul", null, s.diffs.map(d => el("li", null, d[0] ? el("strong", { text: d[0] + " " }) : null, rich(d[1]))))));
+      }
+      sec.append(buildNotes(s.key, s.notesTitle || "Notes on " + (s.ticket ? s.ticket : s.name.toLowerCase())));
+      root.append(sec);
+    }
+    root.append(el("section", { class: "ticket", id: "general", "aria-labelledby": "h-general" },
+      el("header", { class: "ticket-head" },
+        el("h2", { id: "h-general", text: GENERAL.name }),
+        el("p", { class: "lead" }, rich(GENERAL.lead))),
+      buildNotes("general", "Notes")));
+  }
+
+  // ---------- composer (one element, moved where it is needed) ----------
+  const composer = (function () {
+    const label = el("label", { for: "composer-text" });
+    const ta = el("textarea", { id: "composer-text", maxlength: "4000" });
+    const err = el("p", { class: "err", role: "alert", hidden: true });
+    const post = el("button", { type: "submit", class: "btn primary" }, "Post");
+    const cancel = el("button", { type: "button", class: "btn", onclick: closeComposer }, "Cancel");
+    const form = el("form", { class: "composer" }, label, ta, err,
+      el("div", { class: "row" }, el("span", { class: "hint", text: "Ctrl + Enter to send · Esc to cancel" }), cancel, post));
+    form.addEventListener("submit", e => { e.preventDefault(); submitComposer(); });
+    ta.addEventListener("keydown", e => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submitComposer(); }
+      if (e.key === "Escape") { e.preventDefault(); closeComposer(); }
+    });
+    return { form: form, label: label, ta: ta, err: err, post: post };
+  })();
+
+  function sectionName(key) {
+    if (key === "general") return GENERAL.name;
+    const s = SECTIONS.find(x => x.key === key);
+    return s ? s.name : key;
+  }
+
+  function composerLabel(a) {
+    const m = MODES[a.mode];
+    if (a.mode !== "new") return m.label;
+    if (a.figure && a.x != null) return el("span", null, el("span", { class: "chip", text: "New pin" }), " on " + figLabel(a.figure));
+    if (a.figure) return "Comment on " + figLabel(a.figure);
+    if (a.section === "general") return "General note";
+    return "Note on " + sectionName(a.section);
+  }
+
+  function viewRoot() { return view === "feedback" ? $("#feedback") : $("#screens"); }
+
+  function openComposer(a) {
+    if (mode !== "write") { flashNotice(); return; }
+    const keepText = active && active.mode === "new" && a.mode === "new" ? composer.ta.value : "";
+    active = a;
+    const m = MODES[a.mode];
+    composer.form.className = "composer m-" + a.mode;
+    composer.label.replaceChildren(composerLabel(a));
+    composer.ta.placeholder = m.placeholder;
+    composer.err.hidden = true;
+    composer.post.textContent = m.button;
+    if (a.mode === "edit") {
+      const c = comments.find(x => x.id === a.cid);
+      composer.ta.value = c ? c.body : "";
+    } else {
+      composer.ta.value = keepText;
+    }
+    renderPins(derive());
+    placeComposer();
+    composer.ta.focus({ preventScroll: true });
+    composer.form.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" });
+  }
+
+  function closeComposer() {
+    active = null;
+    composer.ta.value = "";
+    composer.form.remove();
+    renderPins(derive());
+  }
+
+  function placeComposer() {
+    if (!active) { composer.form.remove(); return; }
+    const root = viewRoot();
+    if (active.mode !== "new") {
+      const item = root.querySelector('[data-cid="' + CSS.escape(active.cid) + '"]');
+      if (!item) { closeComposer(); return; }
+      if (item.nextSibling !== composer.form) item.after(composer.form);
+      return;
+    }
+    const key = active.figure ? "fig:" + active.figure : "section:" + active.section;
+    const slot = $("#screens").querySelector('[data-slot="' + CSS.escape(key) + '"]');
+    if (slot && composer.form.parentNode !== slot) slot.append(composer.form);
+  }
+
+  // Which resolution moves this viewer may make on a top-level comment right now.
+  function movesFor(c, D) {
+    if (mode !== "write" || c.deleted) return [];
+    const st = D.status[c.id];
+    const isAuthor = !!c.author && c.author === myId;
+    if (st === "open" || st === "reopened") return isAuthor ? ["close"] : ["resolve"];
+    if (st === "resolved") return ["reopen"];
+    return [];
+  }
+
+  async function submitComposer() {
+    if (!active || mode !== "write") return;
+    const a = active;
+    const m = MODES[a.mode];
+    const body = composer.ta.value.trim();
+    if (m.required && !body) { composer.ta.focus(); composer.err.textContent = "Add a note first."; composer.err.hidden = false; return; }
+    composer.post.disabled = true;
+    composer.err.hidden = true;
+    try {
+      const now = new Date().toISOString();
+      if (a.mode === "edit") {
+        await withRetry(() => db.doc("comments/" + a.cid).update({ body: body, editedAt: now }));
+      } else if (a.mode === "new" || a.mode === "reply") {
+        // The id is minted once, so a retry after a lost answer writes the same row, not a second one.
+        const ref = db.collection("comments").doc();
+        const row = {
+          kind: "comment", ticket: ticketOf(a.section), section: a.section, figure: a.figure || null,
+          x: a.mode === "new" && a.x != null ? round4(a.x) : null,
+          y: a.mode === "new" && a.y != null ? round4(a.y) : null,
+          parent: a.mode === "reply" ? a.cid : null,
+          body: body, author: myId, createdAt: now, resolved: false
+        };
+        await withRetry(() => ref.set(row));
+      } else {
+        const D = derive();
+        const target = D.tops.find(t => t.id === a.cid);
+        if (!target || movesFor(target, D).indexOf(a.mode) < 0) {
+          throw { code: "stale" };
+        }
+        const ref = db.collection("comments").doc();
+        const row = {
+          kind: a.mode === "reopen" ? "reopen" : "accept", parent: a.cid, ticket: ticketOf(target.section), section: target.section,
+          figure: null, x: null, y: null, body: body, author: myId, createdAt: now
+        };
+        await withRetry(() => ref.set(row));
+      }
+      closeComposer();
+    } catch (e) {
+      composer.err.textContent = writeErrorText(e);
+      composer.err.hidden = false;
+    } finally {
+      composer.post.disabled = false;
+    }
+  }
+
+  const round4 = n => Math.round(n * 10000) / 10000;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  async function withRetry(fn) {
+    try { return await fn(); }
+    catch (e) {
+      if (e && e.code === "unavailable") { await sleep(400 + Math.random() * 600); return await fn(); }
+      throw e;
+    }
+  }
+  function writeErrorText(e) {
+    const code = e && e.code;
+    if (code === "stale") return "Someone changed this comment's status while you were writing. Check where it stands now, then try again.";
+    if (code === "invalid_argument") {
+      setMode("read");
+      return "This couldn't be saved because this page lets you read comments but not add them. Ask " + OWNER + " for Contributor access in the Share menu.";
+    }
+    if (code === "quota_exceeded") return "The comment store is full, so this couldn't be saved. Let " + OWNER + " know.";
+    if (code === "revoked") { setMode("off"); return "Your access to this page changed. Reload the page to continue."; }
+    return "This couldn't be saved. Check your connection and try again.";
+  }
+
+  async function act(fn, item) {
+    try { await withRetry(fn); }
+    catch (e) { if (item) item.append(el("p", { class: "err", role: "alert", text: writeErrorText(e) })); }
+  }
+  function removeComment(c, item) {
+    pendingDelete = null;
+    const hasChildren = comments.some(x => x.parent === c.id && !(x.kind === "comment" && x.deleted));
+    if (hasChildren) act(() => db.doc("comments/" + c.id).update({ deleted: true, body: "" }), item);
+    else act(() => db.doc("comments/" + c.id).delete(), item);
+  }
+
+  // ---------- rendering ----------
+  // Rows from pages built before the section field existed carry only ticket, which was then the section
+  // key. Those tickets are upper-case Jira keys ("ABC-12") and section keys are lower-case, so compare
+  // without case.
+  function clean(raw, id) {
+    if (!raw || typeof raw !== "object") return null;
+    const oldKey = typeof raw.ticket === "string" ? raw.ticket.toLowerCase() : null;
+    const section = SECTION_KEYS.has(raw.section) ? raw.section : (!raw.section && SECTION_KEYS.has(oldKey) ? oldKey : null);
+    if (!section) return null;
+    const kind = KINDS.has(raw.kind) ? raw.kind : "comment";
+    const parent = typeof raw.parent === "string" && raw.parent ? raw.parent : null;
+    if (kind !== "comment" && !parent) return null;
+    const figure = kind === "comment" && typeof raw.figure === "string" && FIGURES.has(raw.figure) ? raw.figure : null;
+    const num = v => (typeof v === "number" && isFinite(v) ? Math.min(1, Math.max(0, v)) : null);
+    const x = figure && !parent ? num(raw.x) : null, y = figure && !parent ? num(raw.y) : null;
+    return {
+      id: id, kind: kind, section: section, figure: figure,
+      x: x != null && y != null ? x : null, y: x != null && y != null ? y : null,
+      parent: parent,
+      body: typeof raw.body === "string" ? raw.body.slice(0, 4000) : "",
+      author: typeof raw.author === "string" ? raw.author : null,
+      createdAt: typeof raw.createdAt === "string" ? raw.createdAt : "",
+      editedAt: typeof raw.editedAt === "string" ? raw.editedAt : null,
+      legacyResolved: raw.resolved === true,
+      deleted: raw.deleted === true,
+      images: kind !== "comment" ? cleanImages(raw.images) : []
+    };
+  }
+
+  // ---------- screenshots and links in comments ----------
+  // A resolution note can carry screenshots from this page's own replies/ folder. They are added through the
+  // store when a note is posted on the owner's behalf; the composer has no upload. Links in any comment or
+  // note are clickable (http and https only).
+  const IMG_SRC = /^replies\/[\w.-]+\.(?:png|jpe?g|webp)$/;
+  function cleanImages(v) {
+    if (!Array.isArray(v)) return [];
+    return v.filter(i => i && typeof i.src === "string" && IMG_SRC.test(i.src)).slice(0, 8).map(i => ({
+      src: i.src,
+      alt: typeof i.alt === "string" ? i.alt.slice(0, 300) : "",
+      caption: typeof i.caption === "string" ? i.caption.slice(0, 300) : ""
+    }));
+  }
+
+  const URL_RE = /https?:\/\/[^\s<>"]*[^\s<>".,;:!?)]/g;
+  function linkified(text) {
+    const out = [];
+    let last = 0;
+    for (const m of text.matchAll(URL_RE)) {
+      if (m.index > last) out.push(text.slice(last, m.index));
+      out.push(el("a", { href: m[0], target: "_blank", rel: "noopener", text: m[0] }));
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) out.push(text.slice(last));
+    return out;
+  }
+
+  let viewer = null;
+  function openViewer(i) {
+    if (!viewer) {
+      const img = el("img", { alt: "" });
+      const cap = el("p", { class: "viewer-cap" });
+      viewer = el("dialog", { class: "viewer", "aria-label": "Screenshot" },
+        el("form", { method: "dialog", class: "viewer-bar" }, cap, el("button", { type: "submit", class: "btn" }, "Close")),
+        img);
+      viewer.addEventListener("click", e => { if (e.target === viewer) viewer.close(); });
+      document.body.append(viewer);
+      viewer.parts = { img: img, cap: cap };
+    }
+    viewer.parts.img.src = i.src;
+    viewer.parts.img.alt = i.alt;
+    viewer.parts.cap.textContent = i.caption || i.alt;
+    viewer.showModal();
+  }
+
+  function attachments(images) {
+    if (!images || !images.length) return null;
+    return el("div", { class: "att" }, images.map(i => el("figure", null,
+      el("button", { type: "button", class: "att-shot", "aria-label": "View full size: " + (i.caption || i.alt || "screenshot"), onclick: () => openViewer(i) },
+        el("img", { src: i.src, alt: "", loading: "lazy" })),
+      i.caption ? el("figcaption", { text: i.caption }) : null)));
+  }
+
+  function fmtTime(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return "";
+    try { return d.toLocaleString(LOCALE, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); }
+    catch (e) { return d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); }
+  }
+  // A name is pending until claude.ai has answered for that id. "Someone" only when it answered and could
+  // not name the person, or when no answer came within 10 seconds. Plain text (copies, "Waiting for")
+  // never shows the pending state.
+  function personName(id, plain) {
+    const p = id && profileCache[id];
+    if (!p) return plain || !id || !user || namesGaveUp ? "Someone" : null;
+    const name = p.name || (p.isMe ? "You" : "Someone");
+    return !plain && p.isMe ? name + " (you)" : name;
+  }
+  function whoEl(tag, cls, id) {
+    const n = personName(id);
+    return n === null
+      ? el(tag, { class: (cls ? cls + " " : "") + "is-pending" }, "Loading name")
+      : el(tag, { class: cls || null, text: n });
+  }
+  function personAvatar(id) {
+    const p = id && profileCache[id];
+    return p ? p.avatarUrl : null;
+  }
+
+  function moveButton(c, move) {
+    const labels = { resolve: "Mark resolved", close: "Mark resolved", reopen: "Reopen" };
+    const cls = move === "reopen" ? "link-btn" : "link-btn ok";
+    return el("button", { type: "button", class: cls, onclick: () => openComposer({ mode: move, cid: c.id, section: c.section, figure: c.figure }) }, labels[move]);
+  }
+
+  function renderEvent(e, prevKind) {
+    const resolves = RESOLVES.has(e.kind);
+    const mark = resolves ? "✓ " + (e.kind === "accept" && prevKind === "propose" ? "Accepted" : "Marked resolved") : "↺ Reopened";
+    const av = personAvatar(e.author);
+    return el("div", { class: "evt k-" + (resolves ? "resolve" : "reopen") },
+      el("div", { class: "evt-head" },
+        el("span", { class: "mark", text: mark }),
+        el("span", { text: "by" }),
+        av ? el("img", { src: av, alt: "" }) : null,
+        whoEl("strong", null, e.author),
+        el("time", { datetime: e.createdAt, text: fmtTime(e.createdAt) })),
+      e.body ? el("p", { class: "evt-body" }, linkified(e.body)) : null,
+      attachments(e.images));
+  }
+
+  function renderItem(c, D, inFeedback) {
+    const isTop = !c.parent;
+    const st = isTop ? D.status[c.id] : null;
+    const mine = !!c.author && c.author === myId;
+    const item = el("article", { class: "cmt" + (isTop ? " st-" + st : ""), "data-cid": c.id });
+    const av = personAvatar(c.author);
+    item.append(el("div", { class: "cmt-head" },
+      av ? el("img", { src: av, alt: "" }) : null,
+      whoEl("span", "who", c.author),
+      el("time", { datetime: c.createdAt, text: fmtTime(c.createdAt) + (c.editedAt ? " · edited" : "") }),
+      isTop && D.pins[c.id] ? el("span", { class: "chip", text: "Pin " + D.pins[c.id] }) : null,
+      isTop && st !== "open" ? el("span", { class: "chip st-" + st, text: STATUS_LABEL[st] }) : null));
+    item.append(c.deleted ? el("p", { class: "cmt-body is-gone", text: "Comment deleted." }) : el("p", { class: "cmt-body" }, linkified(c.body)));
+
+    const actions = el("div", { class: "cmt-actions" });
+    if (mode === "write" && !c.deleted) {
+      if (pendingDelete === c.id) {
+        actions.append(el("span", { class: "context", text: "Delete this comment?" }),
+          el("button", { type: "button", class: "link-btn danger", onclick: () => removeComment(c, item) }, "Delete"),
+          el("button", { type: "button", class: "link-btn", onclick: () => { pendingDelete = null; renderAll(); } }, "Keep"));
+      } else {
+        if (isTop) {
+          actions.append(el("button", { type: "button", class: "link-btn", onclick: () => openComposer({ mode: "reply", cid: c.id, section: c.section, figure: c.figure }) }, "Reply"));
+          movesFor(c, D).forEach(mv => actions.append(moveButton(c, mv)));
+        }
+        if (mine) {
+          actions.append(el("button", { type: "button", class: "link-btn", onclick: () => openComposer({ mode: "edit", cid: c.id, section: c.section, figure: c.figure }) }, "Edit"));
+          actions.append(el("button", { type: "button", class: "link-btn danger", onclick: () => { pendingDelete = c.id; renderAll(); } }, "Delete"));
+        }
+      }
+    }
+    if (inFeedback && isTop) actions.append(el("button", { type: "button", class: "link-btn", onclick: () => showOnScreen(c) }, "Show on screen"));
+    if (actions.childNodes.length) item.append(actions);
+
+    if (isTop) {
+      const kids = D.children.get(c.id) || [];
+      const nodes = [];
+      let prevKind = null;
+      for (const k of kids) {
+        if (k.kind === "comment") { if (!k.deleted) nodes.push(renderItem(k, D, inFeedback)); }
+        else { nodes.push(renderEvent(k, prevKind)); prevKind = k.kind; }
+      }
+      if (nodes.length) item.append(el("div", { class: "children" }, nodes));
+    }
+    return item;
+  }
+
+  function renderPins(D) {
+    for (const fid of Object.keys(figEls)) {
+      const nodes = [];
+      D.tops.filter(c => c.figure === fid && c.x != null && !c.deleted && D.visible(c)).forEach(c => {
+        const st = D.status[c.id];
+        const b = el("button", {
+          type: "button", class: "pin st-" + st, "data-pin": c.id,
+          "aria-label": "Pin " + D.pins[c.id] + ", " + STATUS_LABEL[st] + ": " + c.body.slice(0, 80),
+          onclick: () => focusComment(c.id)
+        }, String(D.pins[c.id]) + (st === "resolved" ? "✓" : st === "reopened" ? "↺" : ""));
+        b.style.left = (c.x * 100) + "%";
+        b.style.top = (c.y * 100) + "%";
+        nodes.push(b);
+      });
+      if (active && active.mode === "new" && active.figure === fid && active.x != null) {
+        const d = el("span", { class: "pin is-draft", "aria-hidden": "true" }, "+");
+        d.style.left = (active.x * 100) + "%";
+        d.style.top = (active.y * 100) + "%";
+        nodes.push(d);
+      }
+      figEls[fid].pins.replaceChildren(...nodes);
+    }
+  }
+
+  function renderScreens(D) {
+    const top = D.tops.filter(D.visible);
+    for (const fid of Object.keys(figEls)) {
+      figEls[fid].thread.replaceChildren(...top.filter(c => c.figure === fid).map(c => renderItem(c, D, false)));
+    }
+    for (const key of Object.keys(sectionEls)) {
+      const list = top.filter(c => c.section === key && !c.figure);
+      sectionEls[key].thread.replaceChildren(...list.map(c => renderItem(c, D, false)));
+      sectionEls[key].empty.hidden = list.length > 0;
+    }
+    renderPins(D);
+  }
+
+  function contextLine(c, D) {
+    if (c.figure) return (D.pins[c.id] ? "Pin " + D.pins[c.id] + " on " : "On ") + figLabel(c.figure);
+    return c.section === "general" ? "General note" : "Note on " + sectionName(c.section);
+  }
+
+  function sectionText(s, list, D) {
+    const head = s.key === "general"
+      ? (DATA.ticket ? DATA.ticket + " " : "") + GENERAL.name
+      : (s.ticket || DATA.ticket ? (s.ticket || DATA.ticket) + " " : "") + s.name + ": design feedback";
+    const lines = [head, ""];
+    const indent = t => t.replace(/\n/g, "\n   ");
+    list.forEach((c, i) => {
+      lines.push((i + 1) + ". " + contextLine(c, D) + " [" + STATUS_LABEL[D.status[c.id]].replace(/^[✓↺] /, "") + "]");
+      lines.push("   " + personName(c.author, true) + ", " + fmtTime(c.createdAt) + ": " + (c.deleted ? "[deleted]" : indent(c.body)));
+      let prevKind = null;
+      (D.children.get(c.id) || []).forEach(k => {
+        if (k.kind === "comment") {
+          if (!k.deleted) lines.push("   Reply from " + personName(k.author, true) + ": " + indent(k.body));
+          return;
+        }
+        const what = !RESOLVES.has(k.kind) ? "reopened it"
+          : k.kind === "accept" && prevKind === "propose" ? "accepted the resolution" : "marked it resolved";
+        lines.push("   " + personName(k.author, true) + " " + what + (k.body ? ": " + indent(k.body) : ""));
+        if (k.images.length) lines.push("   Screenshots: " + k.images.map(i => i.caption || i.alt).join("; "));
+        prevKind = k.kind;
+      });
+    });
+    return lines.join("\n");
+  }
+
+  function renderFeedback(D) {
+    const root = $("#feedback");
+    const groups = [];
+    for (const s of SECTIONS.concat([GENERAL])) {
+      const all = D.tops.filter(c => c.section === s.key && D.live(c));
+      const n = { reopened: 0, open: 0, resolved: 0 };
+      all.forEach(c => { n[D.status[c.id]]++; });
+      const list = all.filter(D.visible)
+        .sort((a, b) => (STATUS_ORDER[D.status[a.id]] - STATUS_ORDER[D.status[b.id]]) || (a.createdAt < b.createdAt ? -1 : 1));
+      const status = el("span", { class: "copied", role: "status" });
+      const copyBtn = el("button", { type: "button", class: "btn", disabled: list.length ? null : true }, "Copy as text");
+      const tally = [n.reopened + " reopened", n.open + " open", n.resolved + " resolved"].join(" · ");
+      const group = el("section", { class: "fb-group", "aria-labelledby": "fb-" + s.key },
+        el("div", { class: "fb-head" },
+          el("h2", { id: "fb-" + s.key, text: (s.ticket ? s.ticket + " " : "") + s.name }),
+          el("span", { class: "tally", text: tally }),
+          status, copyBtn));
+      copyBtn.addEventListener("click", () => {
+        const text = sectionText(s, list, D);
+        const fallback = () => {
+          const area = el("textarea", { class: "copy-area", readonly: true, "aria-label": "Feedback as text" });
+          area.value = text;
+          copyBtn.after(area);
+          area.focus(); area.select();
+          status.textContent = "Select all and copy";
+        };
+        try {
+          navigator.clipboard.writeText(text).then(() => { status.textContent = "Copied"; setTimeout(() => { status.textContent = ""; }, 2000); }, fallback);
+        } catch (e) { fallback(); }
+      });
+      if (!list.length) group.append(el("p", { class: "empty", text: all.length ? "Everything here is resolved." : "No feedback yet." }));
+      list.forEach(c => group.append(el("div", { class: "fb-item" }, el("p", { class: "context", text: contextLine(c, D) }), renderItem(c, D, true))));
+      groups.push(group);
+    }
+    root.replaceChildren(...groups);
+  }
+
+  function renderCounts(D) {
+    let total = 0;
+    for (const key of SECTION_KEYS) {
+      const n = D.tops.filter(c => c.section === key && D.live(c) && D.status[c.id] !== "resolved").length;
+      total += n;
+      const badge = document.querySelector('[data-count="' + key + '"]');
+      if (badge) { badge.textContent = String(n); badge.classList.toggle("is-zero", n === 0); badge.setAttribute("aria-label", n + " not yet resolved"); }
+    }
+    const t = $("#total-count");
+    t.textContent = String(total);
+    t.classList.toggle("is-zero", total === 0);
+  }
+
+  function renderAll() {
+    const D = derive();
+    renderCounts(D);
+    renderScreens(D);
+    if (view === "feedback") renderFeedback(D);
+    placeComposer();
+    refreshProfiles();
+  }
+
+  // Names come from claude.ai, not from the stored rows (rows hold ids only). Ask on every render, as the
+  // user capability's contract says: claude.ai caches the answers for the page, merges calls made at the
+  // same time into one round trip and refreshes cached names in the background, so asking again is cheap
+  // and never waits on an earlier call. A name already shown is never replaced by a blank answer. An id
+  // claude.ai could not name yet is asked for again up to three times (after 2, 4 and 6 seconds).
+  let retryTimer = null, retries = 0, namesGaveUp = false;
+  function refreshProfiles() {
+    if (!user) return;
+    const ids = Array.from(new Set(comments.map(c => c.author).filter(Boolean).concat(myId ? [myId] : [])));
+    if (!ids.length) return;
+    Promise.resolve(user.profiles(ids)).then(ps => {
+      let changed = false;
+      for (const id of ids) {
+        const p = ps && ps[id];
+        if (!p) continue;
+        const prev = profileCache[id];
+        const name = p.name || (prev && prev.name) || "";
+        if (!prev || prev.name !== name || prev.avatarUrl !== p.avatarUrl || prev.isMe !== !!p.isMe) changed = true;
+        profileCache[id] = { name: name, avatarUrl: p.avatarUrl, isMe: !!p.isMe };
+      }
+      const unnamed = ids.some(id => profileCache[id] && !profileCache[id].name);
+      if (unnamed && retries < 3 && !retryTimer) {
+        retryTimer = setTimeout(() => { retryTimer = null; retries++; refreshProfiles(); }, 2000 * (retries + 1));
+      }
+      if (changed) renderAll();
+    }, () => { /* profile reads never reject */ });
+  }
+
+  // ---------- interactions ----------
+  function hotPin(e, on) {
+    const item = e.target.closest("[data-cid]");
+    if (!item) return;
+    const pin = document.querySelector('[data-pin="' + CSS.escape(item.getAttribute("data-cid")) + '"]');
+    if (pin) pin.classList.toggle("is-hot", on);
+  }
+  function focusComment(id) {
+    const item = $("#screens").querySelector('[data-cid="' + CSS.escape(id) + '"]');
+    if (!item) return;
+    // Scroll only as far as the comment needs, so the screenshot above it stays in view where it fits.
+    item.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" });
+    item.classList.remove("is-flash"); void item.offsetWidth; item.classList.add("is-flash");
+  }
+  function showOnScreen(c) {
+    if (hideResolved && derive().status[c.id] === "resolved") { hideResolved = false; $("#hide-resolved").checked = false; }
+    setView("screens");
+    requestAnimationFrame(() => {
+      if (c.figure && c.x != null) {
+        const fig = document.getElementById("fig-" + c.figure);
+        if (fig) fig.scrollIntoView({ block: "start", behavior: reduceMotion() ? "auto" : "smooth" });
+        const pin = document.querySelector('[data-pin="' + CSS.escape(c.id) + '"]');
+        if (pin) { pin.classList.add("is-hot"); setTimeout(() => pin.classList.remove("is-hot"), 1800); }
+      } else focusComment(c.id);
+    });
+  }
+
+  function setView(v) {
+    if (v !== view && active) closeComposer();
+    view = v;
+    $("#view-screens").setAttribute("aria-pressed", String(v === "screens"));
+    $("#view-feedback").setAttribute("aria-pressed", String(v === "feedback"));
+    $("#screens").hidden = v !== "screens";
+    $("#feedback").hidden = v !== "feedback";
+    renderAll();
+  }
+
+  const NOTICES = {
+    loading: [null, false],
+    write: [null, false],
+    read: ["You can read the feedback here but not add to it. To comment, ask " + OWNER + " for Contributor access in the Share menu.", true],
+    off: ["Comments can't load in this view. Open this page on claude.ai while signed in to see and add comments.", true]
+  };
+  // Where the comments stand: "pending" until the store first answers, "cached" while only an
+  // unconfirmed copy has arrived, "live" once it has answered in full. The store can go quiet
+  // without an error, so after 10 seconds the notice says so (loadSlow). capped: the newest
+  // LOAD_LIMIT rows filled the window, so older ones are not shown.
+  const LOAD_LIMIT = 1000;
+  let load = "pending", loadSlow = false, loadError = null, capped = false;
+  function loadNotice() {
+    if (loadError) return [loadError, true];
+    if (load === "pending") return loadSlow
+      ? ["Comments can't be reached yet. They'll appear here once the connection recovers; there's no need to reload.", true]
+      : ["Loading comments…", false];
+    if (load === "cached" && loadSlow) return ["These comments may be out of date: the latest couldn't be fetched yet.", true];
+    if (capped) return ["Only the newest " + LOAD_LIMIT + " comments, replies and resolutions are shown, so the oldest are hidden.", true];
+    return [null, false];
+  }
+  function showNotice() {
+    const parts = (mode === "off" ? [NOTICES.off] : [loadNotice(), NOTICES[mode]]).filter(p => p[0]);
+    const n = $("#notice");
+    n.hidden = !parts.length;
+    n.textContent = parts.map(p => p[0]).join(" ");
+    n.classList.toggle("is-warn", parts.some(p => p[1]));
+  }
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("can-write", m === "write");
+    showNotice();
+    if (m !== "write" && active) closeComposer();
+    renderAll();
+  }
+  function flashNotice() {
+    const n = $("#notice");
+    if (n.hidden) return;
+    n.scrollIntoView({ block: "center", behavior: reduceMotion() ? "auto" : "smooth" });
+  }
+
+  async function showMe() {
+    if (!user) return;
+    const me = await user.me();
+    if (!me) return;
+    $("#me").replaceChildren(el("img", { src: me.avatarUrl, alt: "" }),
+      el("span", null, mode === "write" ? "Commenting as " : "Signed in as ", el("strong", { text: me.name || "you" })));
+    $("#me").hidden = false;
+  }
+
+  // ---------- boot ----------
+  buildIntro();
+  buildRail();
+  buildScreens();
+  $("#view-screens").addEventListener("click", () => setView("screens"));
+  $("#view-feedback").addEventListener("click", () => setView("feedback"));
+  $("#hide-resolved").addEventListener("change", e => { hideResolved = e.target.checked; renderAll(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && active) closeComposer(); });
+  setMode("loading");
+
+  (async function start() {
+    const C = window.claude;
+    if (!C || typeof C.use !== "function") { setMode("off"); return; }
+    let d = null, u = null;
+    try { [d, u] = await Promise.all([C.use("db"), C.use("user")]); } catch (e) { d = null; }
+    db = d; user = u;
+    if (!db) { setMode("off"); return; }
+    // Comments, identity and write access load together, not one after another.
+    setTimeout(() => { namesGaveUp = true; renderAll(); }, 10000);
+    const who = user ? Promise.all([user.id(), user.can("data.write")]) : Promise.resolve([null, null]);
+    const loadTimer = setTimeout(() => { loadSlow = true; showNotice(); }, 10000);
+    // Newest first, so a new comment always falls inside the window (an ordered, limited query
+    // delivers nothing beyond it); shown oldest first.
+    db.collection("comments").orderBy("createdAt", "desc").limit(LOAD_LIMIT).onSnapshot(snap => {
+      comments = snap.docs.slice().reverse().filter(s => s.exists).map(s => clean(s.data(), s.id)).filter(Boolean);
+      capped = snap.docs.length >= LOAD_LIMIT;
+      if (!(snap.metadata && snap.metadata.fromCache)) { load = "live"; loadSlow = false; clearTimeout(loadTimer); }
+      else if (load === "pending") load = "cached";
+      if (pendingDelete && !comments.some(c => c.id === pendingDelete)) pendingDelete = null;
+      showNotice();
+      renderAll();
+    }, err => {
+      clearTimeout(loadTimer);
+      loadError = err && err.code === "revoked"
+        ? "Your access to this page changed. Reload the page to continue."
+        : "Comments stopped updating. Reload the page to see the latest.";
+      showNotice();
+    });
+    const [id, canWrite] = await who;
+    myId = id;
+    setMode(myId && canWrite !== false ? "write" : "read");
+    showMe();
+  })();
+})();
+</script>
